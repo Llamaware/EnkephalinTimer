@@ -1,8 +1,10 @@
 # EnkephalinTimer
 
-Enkephalin timer for Limbus Company.
+Enkephalin timer for Limbus Company. (Requires .NET 8.0)
 
 ## Features
+
+- Graphical interface
 
 - Minimize to tray
 
