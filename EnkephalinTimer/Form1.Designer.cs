@@ -68,7 +68,7 @@
             label1.Name = "label1";
             label1.Size = new Size(109, 15);
             label1.TabIndex = 2;
-            label1.Text = "Starting Enkaphelin";
+            label1.Text = "Starting Enkephalin";
             // 
             // label2
             // 
@@ -77,7 +77,7 @@
             label2.Name = "label2";
             label2.Size = new Size(91, 15);
             label2.TabIndex = 3;
-            label2.Text = "Max Enkaphelin";
+            label2.Text = "Max Enkephalin";
             // 
             // button1
             // 
