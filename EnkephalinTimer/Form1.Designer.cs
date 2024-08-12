@@ -125,9 +125,9 @@
             EnCounter.Font = new Font("Segoe UI", 20F);
             EnCounter.Location = new Point(44, 201);
             EnCounter.Name = "EnCounter";
-            EnCounter.Size = new Size(76, 37);
+            EnCounter.Size = new Size(72, 37);
             EnCounter.TabIndex = 8;
-            EnCounter.Text = "??/??";
+            EnCounter.Text = "--/--";
             // 
             // TimeRemain
             // 

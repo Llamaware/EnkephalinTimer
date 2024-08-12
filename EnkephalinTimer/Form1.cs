@@ -1,12 +1,10 @@
-using System;
 using System.Timers;
-using System.Windows.Forms;
 
 namespace EnkephalinTimer
 {
     public partial class Form1 : Form
     {
-        private int remainingTime;
+        private DateTime timerStartTime;
         private static System.Timers.Timer? countdownTimer;
         private int startValue;
         private int maxValue;
@@ -15,7 +13,6 @@ namespace EnkephalinTimer
         {
             InitializeComponent();
 
-            // Set up NotifyIcon
             notifyIcon1.Icon = Properties.Resources.AppIcon;
             notifyIcon1.Visible = false;
             notifyIcon1.Text = "Enkephalin Timer";
@@ -43,9 +40,9 @@ namespace EnkephalinTimer
             {
                 this.Hide();
                 notifyIcon1.Visible = true;
-                notifyIcon1.BalloonTipTitle = "Enkephalin Timer";
-                notifyIcon1.BalloonTipText = "The application is running in the system tray.";
-                notifyIcon1.ShowBalloonTip(2000);
+                //notifyIcon1.BalloonTipTitle = "Enkephalin Timer";
+                //notifyIcon1.BalloonTipText = "The application is running in the system tray.";
+                //notifyIcon1.ShowBalloonTip(2000);
             }
             else
             {
@@ -60,18 +57,14 @@ namespace EnkephalinTimer
                 return;
             }
 
-            // Update the EnCounter label and progress bar
             EnCounter.Text = $"{startValue}/{maxValue}";
             UpdateProgressBar();
 
-            // Reset timer if already running
-            if (countdownTimer != null && countdownTimer.Enabled)
-            {
-                DisposeTimer();
-            }
+            DisposeTimer();
 
-            remainingTime = 360;  // Initialize to 6 minutes
-            TimeRemain.Text = FormatTime(remainingTime);
+            timerStartTime = DateTime.Now;
+
+            TimeRemain.Text = FormatTime(360);
 
             if (startValue == maxValue)
             {
@@ -81,19 +74,18 @@ namespace EnkephalinTimer
             SetTimer();
         }
 
+
         private void button2_Click(object sender, EventArgs e)
         {
-            // Decrease startValue by 20 but not below 0
             if (startValue >= 20)
             {
                 startValue -= 20;
                 EnCounter.Text = $"{startValue}/{maxValue}";
                 UpdateProgressBar();
 
-                // Start the timer if not running
                 if (startValue < maxValue && (countdownTimer == null || !countdownTimer.Enabled))
                 {
-                    remainingTime = 360;  // Initialize to 6 minutes
+                    timerStartTime = DateTime.Now;
                     SetTimer();
                 }
             }
@@ -108,7 +100,7 @@ namespace EnkephalinTimer
             DisposeTimer();
             countdownTimer = new System.Timers.Timer
             {
-                Interval = 1000, // 1 second interval
+                Interval = 250, // 0.25 second interval
                 AutoReset = true,
                 Enabled = true
             };
@@ -124,35 +116,45 @@ namespace EnkephalinTimer
 
         private void OnTimedEvent(object? source, ElapsedEventArgs e)
         {
-            if (remainingTime > 0)
+            TimeSpan elapsed = DateTime.Now - timerStartTime;
+
+            int elapsedSeconds = (int)elapsed.TotalSeconds;
+            int increments = elapsedSeconds / 360;
+
+            if (increments > 0)
             {
-                remainingTime--;
-                this.Invoke((MethodInvoker)delegate
+                startValue += increments;
+                if (startValue > maxValue)
                 {
-                    TimeRemain.Text = FormatTime(remainingTime);
-                });
+                    startValue = maxValue;
+                }
+
+                timerStartTime = DateTime.Now - TimeSpan.FromSeconds(elapsedSeconds % 360);
             }
-            else
+
+            this.Invoke((MethodInvoker)delegate
             {
-                remainingTime = 360; // Reset to 6 minutes
-                startValue++;
-
-                this.Invoke((MethodInvoker)delegate
-                {
-                    EnCounter.Text = $"{startValue}/{maxValue}";
-                    TimeRemain.Text = FormatTime(remainingTime);
-                    UpdateProgressBar();
-                });
-
+                EnCounter.Text = $"{startValue}/{maxValue}";
                 if (startValue >= maxValue)
                 {
-                    notifyIcon1.BalloonTipTitle = "Enkephalin Timer";
-                    notifyIcon1.BalloonTipText = "Resources are full.";
-                    notifyIcon1.ShowBalloonTip(2000);
-                    DisposeTimer();
+                    TimeRemain.Text = FormatTime(360);
                 }
+                else
+                {
+                    TimeRemain.Text = FormatTime(360 - (elapsedSeconds % 360));
+                }
+                UpdateProgressBar();
+            });
+
+            if (startValue >= maxValue)
+            {
+                notifyIcon1.BalloonTipTitle = "Enkephalin Timer";
+                notifyIcon1.BalloonTipText = "Resources are full.";
+                notifyIcon1.ShowBalloonTip(2000);
+                DisposeTimer();
             }
         }
+
 
         private string FormatTime(int totalSeconds)
         {

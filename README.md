@@ -10,6 +10,8 @@ Enkephalin timer for Limbus Company. (Requires .NET 8.0)
 
 - Display notification when Enkephalin is completely refilled
 
+- Works even when computer is in sleep mode
+
 ## Usage
 
 1. Enter your current Enkephalin amount and your maximum Enkephalin limit.
